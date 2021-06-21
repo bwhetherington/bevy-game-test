@@ -15,29 +15,27 @@ pub struct Movement {
 }
 
 fn get_angle_index(vec: Vec2) -> u8 {
+    let angle = vec.angle();
+    println!("angle: {}", angle);
     let angle = vec.angle() / std::f32::consts::TAU;
-    let angle = (angle * 4.0).trunc();
+    let angle = (angle * 4.0).round();
     angle as u8
 }
 
 fn movement(input: Res<Input<KeyCode>>, mut query: Query<(&mut Velocity, &mut Movement)>) {
     let mut angle = Vec2::new(0.0, 0.0);
-    let mut has_input = false;
+
     if input.pressed(KeyCode::A) {
         angle.x -= 1.0;
-        has_input = true;
     }
     if input.pressed(KeyCode::D) {
         angle.x += 1.0;
-        has_input = true;
     }
     if input.pressed(KeyCode::W) {
         angle.y += 1.0;
-        has_input = true;
     }
     if input.pressed(KeyCode::S) {
         angle.y -= 1.0;
-        has_input = true;
     }
 
     if let Some(norm) = angle.try_normalize() {

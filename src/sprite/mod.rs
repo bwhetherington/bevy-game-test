@@ -2,7 +2,7 @@ use bevy::{core::FixedTimestep, prelude::*};
 
 use crate::{movement::Movement, physics::Velocity};
 
-pub const PIXEL_SCALE: f32 = 2.0;
+pub const PIXEL_SCALE: f32 = 4.0;
 
 pub struct AnimationPlugin;
 
@@ -28,6 +28,25 @@ pub struct Animations {
     pub current_animation: usize,
 }
 
+impl Animations {
+    pub fn set_animation(&mut self, index: usize) {
+        if index != self.current_animation {
+            self.current_animation = index;
+            if let Some(mut anim) = self.get_animation_mut() {
+                anim.current_frame = 0;
+            }
+        }
+    }
+
+    pub fn get_animation(&self) -> Option<&Animation> {
+        self.animations.get(self.current_animation)
+    }
+
+    pub fn get_animation_mut(&mut self) -> Option<&mut Animation> {
+        self.animations.get_mut(self.current_animation)
+    }
+}
+
 fn update_sprite_atlas(mut query: Query<(&mut TextureAtlasSprite, &Animations)>) {
     for (mut sprite, animations) in query.iter_mut() {
         let current_anim_index = animations.current_animation;
@@ -41,8 +60,7 @@ fn update_sprite_atlas(mut query: Query<(&mut TextureAtlasSprite, &Animations)>)
 
 fn animate(mut query: Query<(&mut TextureAtlasSprite, &mut Animations)>) {
     for (mut sprite, mut animations) in query.iter_mut() {
-        let current_anim_index = animations.current_animation;
-        if let Some(anim) = animations.animations.get_mut(current_anim_index) {
+        if let Some(anim) = animations.get_animation_mut() {
             anim.current_frame += 1;
             if anim.current_frame >= anim.frames.len() {
                 anim.current_frame = 0;
@@ -67,6 +85,6 @@ fn animate_movement(mut query: Query<(&mut Animations, &Velocity, &Movement)>) {
             3 => 0,
             _ => 0,
         };
-        anims.current_animation = anim;
+        anims.set_animation(anim);
     }
 }

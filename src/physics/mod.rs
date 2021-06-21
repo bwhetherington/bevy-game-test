@@ -48,8 +48,9 @@ fn update_transform(mut query: Query<(&mut Transform, &PixelPosition)>) {
 pub struct PixelPosition(pub Vec2);
 
 fn update_pixel_position(mut query: Query<(&mut PixelPosition, &Position)>) {
+    let scale = 1.0 * PIXEL_SCALE;
     for (mut pixel_pos, pos) in query.iter_mut() {
-        pixel_pos.0.x = (pos.0.x / PIXEL_SCALE).trunc() * PIXEL_SCALE;
-        pixel_pos.0.y = (pos.0.y / PIXEL_SCALE).trunc() * PIXEL_SCALE;
+        pixel_pos.0.x = (pos.0.x / scale).trunc() * scale;
+        pixel_pos.0.y = (pos.0.y / scale).trunc() * scale;
     }
 }
